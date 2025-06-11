@@ -1,0 +1,45 @@
+{
+  "name": "PioneerSimulation",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "Assets": {
+        "$path": "src/assets",
+        "templates": {
+          "$className": "Folder",
+          "ui": { "$path": "src/assets/templates/ui" },
+          "buildings": { "$path": "src/assets/templates/buildings" },
+          "resources": { "$path": "src/assets/templates/resources" }
+        },
+        "Remotes": {
+          "$className": "Folder"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    }
+  }
+} 
