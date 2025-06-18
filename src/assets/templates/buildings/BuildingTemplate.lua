@@ -56,55 +56,182 @@ function BuildingTemplate:setParent(parent)
 end
 
 function BuildingTemplate:createBaseStructure()
-    local base = createBasePart()
-    base.Name = "Base"
-    self:addPart(base)
-    self.model.PrimaryPart = base
+    --[[
+        Generates a simple wooden cabin structure consisting of:
+        1. Wooden plank floor
+        2. Four brick walls
+        3. A flat slate roof with slight over-hang
+    ]]--
+
+    --------------------------------------------------
+    -- 1. Floor
+    --------------------------------------------------
+    local floor = createBasePart()
+    floor.Name = "Floor"
+    floor.Size = Vector3.new(12, 1, 12)
+    floor.Material = Enum.Material.WoodPlanks
+    floor.Color = Color3.fromRGB(99, 83, 58)
+    self:addPart(floor)
+    self.model.PrimaryPart = floor
+
+    --------------------------------------------------
+    -- 2. Walls
+    --------------------------------------------------
+    local wallHeight = 6
+    local wallThickness = 0.5
+    local halfX = floor.Size.X / 2 - wallThickness / 2
+    local halfZ = floor.Size.Z / 2 - wallThickness / 2
+
+    local function makeWall(name, pos, size)
+        local wall = Instance.new("Part")
+        wall.Name = name
+        wall.Size = size
+        wall.Anchored = true
+        wall.Material = Enum.Material.Brick
+        wall.Color = Color3.fromRGB(189, 189, 189)
+        wall.CFrame = floor.CFrame * CFrame.new(pos)
+        self:addPart(wall)
+    end
+
+    local yPos = wallHeight / 2 + floor.Size.Y / 2
+    makeWall("FrontWall", Vector3.new(0, yPos,  halfZ), Vector3.new(floor.Size.X, wallHeight, wallThickness))
+    makeWall("BackWall",  Vector3.new(0, yPos, -halfZ), Vector3.new(floor.Size.X, wallHeight, wallThickness))
+    makeWall("LeftWall",  Vector3.new(-halfX, yPos, 0), Vector3.new(wallThickness, wallHeight, floor.Size.Z))
+    makeWall("RightWall", Vector3.new( halfX, yPos, 0), Vector3.new(wallThickness, wallHeight, floor.Size.Z))
+
+    --------------------------------------------------
+    -- 3. Roof (simple flat slate roof)
+    --------------------------------------------------
+    local roof = Instance.new("Part")
+    roof.Name = "Roof"
+    roof.Size = Vector3.new(floor.Size.X + 1, 0.6, floor.Size.Z + 1) -- over-hang on all sides
+    roof.Anchored = true
+    roof.Material = Enum.Material.Slate
+    roof.Color = Color3.fromRGB(100, 100, 100)
+    roof.CFrame = floor.CFrame * CFrame.new(0, wallHeight + floor.Size.Y, 0)
+    self:addPart(roof)
+
     return self
 end
 
 function BuildingTemplate.createTent()
+    --[[
+        Generates a more realistic camping tent model consisting of:
+        1. A dirt ground patch
+        2. Four wooden support poles
+        3. A ridge pole connecting the two front-to-back poles
+        4. Two canvas cloth wedges making up the left and right sides
+        5. An entrance flap (slightly open) at the front
+    ]]--
+
+    -- Create container model first so we can parent parts incrementally
     local model = Instance.new("Model")
     model.Name = "Tent"
 
+    --------------------------------------------------
+    -- 1. Ground / Floor
+    --------------------------------------------------
     local floor = Instance.new("Part")
     floor.Name = "Floor"
-    floor.Size = Vector3.new(8, 0.5, 10)
+    floor.Size = Vector3.new(8, 0.4, 10)
     floor.Anchored = true
-    floor.Color = Color3.fromRGB(82, 124, 73) -- Grassy green
-    floor.Material = Enum.Material.Fabric
+    floor.Material = Enum.Material.Ground
+    floor.Color = Color3.fromRGB(101, 67, 33) -- earthy brown
+    floor.TopSurface = Enum.SurfaceType.Smooth
+    floor.BottomSurface = Enum.SurfaceType.Smooth
     floor.Parent = model
     model.PrimaryPart = floor
 
-    -- Create the two sloped sides of the tent
-    local leftSide = Instance.new("WedgePart")
-    leftSide.Name = "LeftSide"
-    leftSide.Size = Vector3.new(10, 4, 8)
-    leftSide.Anchored = true
-    leftSide.CFrame = floor.CFrame * CFrame.new(0, 4, 0)
-    leftSide.Color = Color3.fromRGB(0, 132, 209) -- Blue
-    leftSide.Material = Enum.Material.Fabric
-    leftSide.Parent = model
-    
-    local rightSide = Instance.new("WedgePart")
-    rightSide.Name = "RightSide"
-    rightSide.Size = Vector3.new(10, 4, 8)
-    rightSide.Anchored = true
-    rightSide.CFrame = floor.CFrame * CFrame.new(0, 4, 0) * CFrame.Angles(0, math.pi, 0) -- Rotated 180 degrees
-    rightSide.Color = Color3.fromRGB(0, 132, 209) -- Blue
-    rightSide.Material = Enum.Material.Fabric
-    rightSide.Parent = model
-    
-    -- Weld the sides to the floor
-    local weld1 = Instance.new("WeldConstraint")
-    weld1.Part0 = floor
-    weld1.Part1 = leftSide
-    weld1.Parent = floor
-    
-    local weld2 = Instance.new("WeldConstraint")
-    weld2.Part0 = floor
-    weld2.Part1 = rightSide
-    weld2.Parent = floor
+    --------------------------------------------------
+    -- 2. Wooden Support Poles (4 corners)
+    --------------------------------------------------
+    local function createPole(position)
+        local pole = Instance.new("Part")
+        pole.Name = "SupportPole"
+        pole.Shape = Enum.PartType.Cylinder
+        pole.Size = Vector3.new(0.3, 5, 0.3) -- Y is height once rotated upright
+        pole.Anchored = true
+        pole.Material = Enum.Material.WoodPlanks
+        pole.Color = Color3.fromRGB(124, 92, 70)
+        pole.CFrame = floor.CFrame * CFrame.new(position)
+        pole.Parent = model
+        return pole
+    end
+
+    local halfX, halfZ = floor.Size.X/2 - 0.4, floor.Size.Z/2 - 0.4
+    createPole(Vector3.new(-halfX, 2.5, -halfZ)) -- back left
+    createPole(Vector3.new( halfX, 2.5, -halfZ)) -- back right
+    createPole(Vector3.new(-halfX, 2.5,  halfZ)) -- front left
+    createPole(Vector3.new( halfX, 2.5,  halfZ)) -- front right
+
+    --------------------------------------------------
+    -- 3. Ridge Pole (runs length-wise along top)
+    --------------------------------------------------
+    local ridge = Instance.new("Part")
+    ridge.Name = "RidgePole"
+    ridge.Shape = Enum.PartType.Cylinder
+    ridge.Size = Vector3.new(floor.Size.Z + 1, 0.25, 0.25)
+    ridge.Orientation = Vector3.new(0, 0, 90)
+    ridge.Anchored = true
+    ridge.Material = Enum.Material.WoodPlanks
+    ridge.Color = Color3.fromRGB(124, 92, 70)
+    ridge.CFrame = floor.CFrame * CFrame.new(0, 4.8, 0) * CFrame.Angles(math.rad(90), 0, 0)
+    ridge.Parent = model
+
+    --------------------------------------------------
+    -- 4. Canvas Cloth Sides (two wedges)
+    --------------------------------------------------
+    local function createCloth(isLeft)
+        local cloth = Instance.new("WedgePart")
+        cloth.Name = isLeft and "LeftCloth" or "RightCloth"
+        cloth.Size = Vector3.new(floor.Size.Z + 0.2, 5, floor.Size.X) -- width, height, thickness (uses Z, Y, X differently)
+        cloth.Anchored = true
+        cloth.Material = Enum.Material.Fabric
+        cloth.Color = Color3.fromRGB(210, 185, 140) -- canvas beige
+        -- Position: move up half height (2.5) plus floor Y, tilt each side
+        local offsetX = (isLeft and -halfX or halfX)
+        local rotationY = isLeft and 0 or math.pi
+        cloth.CFrame = floor.CFrame * CFrame.new(offsetX, 2.5, 0) * CFrame.Angles(0, rotationY, 0)
+        cloth.Parent = model
+        return cloth
+    end
+
+    local leftCloth = createCloth(true)
+    local rightCloth = createCloth(false)
+
+    -- Weld cloth to ridge & poles for physics stability (optional but good practice)
+    for _, part in ipairs({leftCloth, rightCloth}) do
+        local weld = Instance.new("WeldConstraint")
+        weld.Part0 = part
+        weld.Part1 = ridge
+        weld.Parent = part
+    end
+
+    --------------------------------------------------
+    -- 5. Entrance Flap (split into two slightly open triangles)
+    --------------------------------------------------
+    local function createFlap(isLeft)
+        local flap = Instance.new("WedgePart")
+        flap.Name = isLeft and "EntranceFlapL" or "EntranceFlapR"
+        flap.Size = Vector3.new(5, 4, 0.2)
+        flap.Anchored = true
+        flap.Material = Enum.Material.Fabric
+        flap.Color = Color3.fromRGB(210, 185, 140)
+        local facingOffset = Vector3.new(0, 0, halfZ + 0.1)
+        local sideOffset = Vector3.new((isLeft and -2.5 or 2.5), 0, 0)
+        local openAngle = math.rad(isLeft and -15 or 15)
+        flap.CFrame = floor.CFrame * CFrame.new(sideOffset + facingOffset) * CFrame.Angles(0, openAngle, 0)
+        flap.Parent = model
+        -- weld to floor so they stay with tent
+        local w = Instance.new("WeldConstraint")
+        w.Part0 = flap
+        w.Part1 = floor
+        w.Parent = flap
+        return flap
+    end
+
+    createFlap(true)
+    createFlap(false)
 
     return model
 end
@@ -114,6 +241,8 @@ function BuildingTemplate:createWall(position, size)
     wall.Name = "Wall"
     wall.Size = size
     wall.CFrame = CFrame.new(position)
+    wall.Material = Enum.Material.Brick
+    wall.Color = Color3.fromRGB(189, 189, 189)
     self:addPart(wall)
     return self
 end
@@ -123,6 +252,8 @@ function BuildingTemplate:createRoof(position, size)
     roof.Name = "Roof"
     roof.Size = size
     roof.CFrame = CFrame.new(position)
+    roof.Material = Enum.Material.Slate
+    roof.Color = Color3.fromRGB(100, 100, 100)
     self:addPart(roof)
     return self
 end
