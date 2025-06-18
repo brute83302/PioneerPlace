@@ -56,10 +56,61 @@ function BuildingTemplate:setParent(parent)
 end
 
 function BuildingTemplate:createBaseStructure()
-    local base = createBasePart()
-    base.Name = "Base"
-    self:addPart(base)
-    self.model.PrimaryPart = base
+    --[[
+        Generates a simple wooden cabin structure consisting of:
+        1. Wooden plank floor
+        2. Four brick walls
+        3. A flat slate roof with slight over-hang
+    ]]--
+
+    --------------------------------------------------
+    -- 1. Floor
+    --------------------------------------------------
+    local floor = createBasePart()
+    floor.Name = "Floor"
+    floor.Size = Vector3.new(12, 1, 12)
+    floor.Material = Enum.Material.WoodPlanks
+    floor.Color = Color3.fromRGB(99, 83, 58)
+    self:addPart(floor)
+    self.model.PrimaryPart = floor
+
+    --------------------------------------------------
+    -- 2. Walls
+    --------------------------------------------------
+    local wallHeight = 6
+    local wallThickness = 0.5
+    local halfX = floor.Size.X / 2 - wallThickness / 2
+    local halfZ = floor.Size.Z / 2 - wallThickness / 2
+
+    local function makeWall(name, pos, size)
+        local wall = Instance.new("Part")
+        wall.Name = name
+        wall.Size = size
+        wall.Anchored = true
+        wall.Material = Enum.Material.Brick
+        wall.Color = Color3.fromRGB(189, 189, 189)
+        wall.CFrame = floor.CFrame * CFrame.new(pos)
+        self:addPart(wall)
+    end
+
+    local yPos = wallHeight / 2 + floor.Size.Y / 2
+    makeWall("FrontWall", Vector3.new(0, yPos,  halfZ), Vector3.new(floor.Size.X, wallHeight, wallThickness))
+    makeWall("BackWall",  Vector3.new(0, yPos, -halfZ), Vector3.new(floor.Size.X, wallHeight, wallThickness))
+    makeWall("LeftWall",  Vector3.new(-halfX, yPos, 0), Vector3.new(wallThickness, wallHeight, floor.Size.Z))
+    makeWall("RightWall", Vector3.new( halfX, yPos, 0), Vector3.new(wallThickness, wallHeight, floor.Size.Z))
+
+    --------------------------------------------------
+    -- 3. Roof (simple flat slate roof)
+    --------------------------------------------------
+    local roof = Instance.new("Part")
+    roof.Name = "Roof"
+    roof.Size = Vector3.new(floor.Size.X + 1, 0.6, floor.Size.Z + 1) -- over-hang on all sides
+    roof.Anchored = true
+    roof.Material = Enum.Material.Slate
+    roof.Color = Color3.fromRGB(100, 100, 100)
+    roof.CFrame = floor.CFrame * CFrame.new(0, wallHeight + floor.Size.Y, 0)
+    self:addPart(roof)
+
     return self
 end
 
@@ -190,6 +241,8 @@ function BuildingTemplate:createWall(position, size)
     wall.Name = "Wall"
     wall.Size = size
     wall.CFrame = CFrame.new(position)
+    wall.Material = Enum.Material.Brick
+    wall.Color = Color3.fromRGB(189, 189, 189)
     self:addPart(wall)
     return self
 end
@@ -199,6 +252,8 @@ function BuildingTemplate:createRoof(position, size)
     roof.Name = "Roof"
     roof.Size = size
     roof.CFrame = CFrame.new(position)
+    roof.Material = Enum.Material.Slate
+    roof.Color = Color3.fromRGB(100, 100, 100)
     self:addPart(roof)
     return self
 end
