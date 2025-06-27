@@ -70,23 +70,41 @@ function PlantingUI.new(targetPlot)
     listLayout.SortOrder = Enum.SortOrder.Name
     listLayout.Parent = scrollFrame
 
-    -- Populate the list with crops
+    -- Get player inventory to check for seeds
+    local getPlayerDataFn = ReplicatedStorage.Remotes.GetPlayerData
+    local playerData
+    pcall(function() playerData = getPlayerDataFn:InvokeServer() end)
+    local inv = (playerData and playerData.Inventory) or {}
+
     local requestPlantCropEvent = ReplicatedStorage.Remotes.RequestPlantCrop
-    for cropType, config in pairs(CropConfig) do
+
+    local function addCropButton(cropType, config)
         local button = Instance.new("TextButton")
         button.Name = config.Name
-        button.Text = config.Name .. " (" .. (config.GrowthTime/60) .. "m)"
+        button.Text = config.Name .. " (" .. math.floor(config.GrowthTime/60) .. "m)"
         button.Size = UDim2.new(1, 0, 0, 40)
         button.Font = Enum.Font.SourceSansBold
         button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
         button.Parent = scrollFrame
-        
         button.MouseButton1Click:Connect(function()
-            print("Requesting to plant", cropType)
             requestPlantCropEvent:FireServer(self.targetPlot, cropType)
             self:destroy()
         end)
+    end
+
+    for cropType, config in pairs(CropConfig) do
+        if type(config) == "table" then
+            if cropType == "CLOVER" then
+                if (inv.CLOVER_SEED or 0) > 0 then
+                    addCropButton(cropType, config)
+                end
+            elseif cropType == "APPLE_TREE" then
+                if (inv.APPLE_SEED or 0) > 0 then
+                    addCropButton(cropType, config)
+                end
+            end
+        end
     end
     
     return self

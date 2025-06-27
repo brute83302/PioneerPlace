@@ -8,16 +8,7 @@
         "$path": "src/shared"
       },
       "Assets": {
-        "$path": "src/assets",
-        "templates": {
-          "$className": "Folder",
-          "ui": { "$path": "src/assets/templates/ui" },
-          "buildings": { "$path": "src/assets/templates/buildings" },
-          "resources": { "$path": "src/assets/templates/resources" }
-        },
-        "Remotes": {
-          "$className": "Folder"
-        }
+        "$path": "src/assets"
       }
     },
     "ServerScriptService": {

@@ -6,6 +6,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local UIManager = require(script.Parent.Parent.UIManagerV2)
+local PlacementController = require(script.Parent.PlacementController)
 
 local InteractionHandler = {}
 
@@ -21,6 +22,9 @@ function InteractionHandler.initialize()
         if not target or not target.Parent then return end
 
         local model = target.Parent
+        -- Ignore clicks during placement mode to prevent ghost model errors
+        if PlacementController.isPlacing then return end
+
         local objectType = model:GetAttribute("ObjectType")
 
         if objectType == "RESOURCE_NODE" then

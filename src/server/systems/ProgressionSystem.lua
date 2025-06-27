@@ -7,12 +7,14 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local ProgressionSystem = {}
+local GameSystems -- Store the GameSystems table
+
+function ProgressionSystem.initialize(gameSystems)
+    GameSystems = gameSystems
+    print("ProgressionSystem initialized.")
+end
 
 function ProgressionSystem.levelUp(player, data)
-    local GameSystems = require(ServerScriptService.Server.GameSystems)
-    local PlayerService = GameSystems.PlayerService
-    local EnergySystem = GameSystems.EnergySystem
-
     data.Level = data.Level + 1
     data.XP = data.XP - data.XPToNextLevel -- Carry over extra XP
     data.XPToNextLevel = data.Level * 100 -- The next level requires more XP
@@ -20,7 +22,7 @@ function ProgressionSystem.levelUp(player, data)
     print("PLAYER LEVELED UP:", player.Name, "is now Level", data.Level)
 
     -- Grant level-up rewards
-    EnergySystem.setEnergy(player, data.MaxEnergy)
+    GameSystems.EnergySystem.setEnergy(player, data.MaxEnergy)
     print("Refilled energy as a level-up reward.")
 
     -- Notify the client about the level up for special effects
@@ -33,10 +35,7 @@ function ProgressionSystem.levelUp(player, data)
 end
 
 function ProgressionSystem.addXP(player, amount)
-    local GameSystems = require(ServerScriptService.Server.GameSystems)
-    local PlayerService = GameSystems.PlayerService
-
-    local data = PlayerService.getPlayerData(player)
+    local data = GameSystems.PlayerService.getPlayerData(player)
     if not data then return end
 
     data.XP = data.XP + amount
@@ -53,10 +52,7 @@ function ProgressionSystem.addXP(player, amount)
 end
 
 function ProgressionSystem.resetProgression(player)
-    local GameSystems = require(ServerScriptService.Server.GameSystems)
-    local PlayerService = GameSystems.PlayerService
-
-    local data = PlayerService.getPlayerData(player)
+    local data = GameSystems.PlayerService.getPlayerData(player)
     if not data then return end
 
     data.Level = 1

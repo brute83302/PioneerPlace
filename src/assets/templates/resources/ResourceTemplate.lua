@@ -30,6 +30,10 @@ local RESOURCE_TYPES = {
         color = Color3.fromRGB(128, 128, 128),
         material = Enum.Material.Slate
     },
+    WEED = {
+        color = Color3.fromRGB(85, 142, 52),
+        material = Enum.Material.Grass
+    },
     ORE = {
         color = Color3.fromRGB(184, 134, 11),
         material = Enum.Material.Metal
@@ -107,6 +111,18 @@ function ResourceTemplate:createResourceNode()
         weld.Part1 = leaves
         weld.Parent = trunk
 
+    elseif self.resourceType == "WEED" then
+        local weed = Instance.new("Part")
+        weed.Name = "ResourceNode"
+        weed.Size = Vector3.new(1, 1, 1)
+        weed.Color = RESOURCE_TYPES.WEED.color
+        weed.Material = Enum.Material.Grass
+        weed.Anchored = true
+        weed.Shape = Enum.PartType.Block
+        weed.TopSurface = Enum.SurfaceType.Smooth
+        weed.BottomSurface = Enum.SurfaceType.Smooth
+        self:addPart(weed)
+        self.model.PrimaryPart = weed
     else
         -- Default resource creation (for stone, ore, etc.)
         local node = createResourcePart(self.resourceType)
