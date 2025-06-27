@@ -73,18 +73,25 @@ function InteractionController.setup()
                     local resType = (objectType=="WOOD_SILO") and "WOOD" or (objectType=="STONE_SHED" and "STONE" or "FOOD")
                     local current = data.Resources and data.Resources[resType] or 0
                     local capacity = data.Capacity[resType] or 0
-                    local gui = Instance.new("TextLabel")
-                    gui.Size = UDim2.new(0,200,0,40)
-                    gui.Position = UDim2.new(0.5,-100,0.2,0)
-                    gui.AnchorPoint = Vector2.new(0.5,0)
-                    gui.BackgroundColor3 = Color3.fromRGB(0,0,0)
-                    gui.BackgroundTransparency = 0.4
-                    gui.TextColor3 = Color3.new(1,1,1)
-                    gui.Font = Enum.Font.GothamBold
-                    gui.TextScaled = true
-                    gui.Text = resType..": "..current.."/"..capacity
-                    gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-                    game:GetService("Debris"):AddItem(gui,2)
+                    local sg = Instance.new("ScreenGui")
+                    sg.Name = "CapacityPopupGui"
+                    sg.ResetOnSpawn = false
+                    sg.IgnoreGuiInset = true
+                    sg.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+                    local label = Instance.new("TextLabel")
+                    label.Size = UDim2.new(0,220,0,40)
+                    label.Position = UDim2.new(0.5,-110,0.18,0)
+                    label.AnchorPoint = Vector2.new(0.5,0)
+                    label.BackgroundColor3 = Color3.fromRGB(0,0,0)
+                    label.BackgroundTransparency = 0.35
+                    label.TextColor3 = Color3.new(1,1,1)
+                    label.Font = Enum.Font.GothamBold
+                    label.TextScaled = true
+                    label.Text = resType..": "..current.." / "..capacity
+                    label.Parent = sg
+
+                    game:GetService("Debris"):AddItem(sg,2)
                 end
                 return
             else
