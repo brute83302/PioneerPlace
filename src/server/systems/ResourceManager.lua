@@ -17,9 +17,29 @@ local LEGACY_BASE_YIELD = {
     STONE = 5,
 }
 
+local DEFAULT_CAPACITY = { WOOD = 100, STONE = 100, FOOD = 100 }
+
 function ResourceManager.initialize(gameSystems)
     GameSystems = gameSystems
     print("ResourceManager initialized.")
+end
+
+-- Ensure capacity table exists on player data
+local function ensureCapacityTable(data)
+    data.Capacity = data.Capacity or {}
+    for res, cap in pairs(DEFAULT_CAPACITY) do
+        if data.Capacity[res] == nil then
+            data.Capacity[res] = cap
+        end
+    end
+end
+
+function ResourceManager.increaseCapacity(player, resourceType, amount)
+    local data = GameSystems.PlayerService.getPlayerData(player)
+    if not data then return end
+    ensureCapacityTable(data)
+    data.Capacity[resourceType] = (data.Capacity[resourceType] or 0) + amount
+    print("Increased", resourceType, "capacity for", player.Name, "to", data.Capacity[resourceType])
 end
 
 function ResourceManager.addResource(player, resourceType, amount)
@@ -34,11 +54,21 @@ function ResourceManager.addResource(player, resourceType, amount)
         resourceTypeMapped = "FOOD"
     end
 
+    ensureCapacityTable(data)
+
     local baseAmount = amount or ResourceConfig.getBaseYield(resourceTypeMapped) or LEGACY_BASE_YIELD[resourceTypeMapped] or 1
     local bonusMultiplier = GameSystems.ToolSystem and GameSystems.ToolSystem.getBonus(player, resourceType) or 1
     local amountToAdd = baseAmount * bonusMultiplier
     
-    data.Resources[resourceTypeMapped] = (data.Resources[resourceTypeMapped] or 0) + amountToAdd
+    local current = data.Resources[resourceTypeMapped] or 0
+    local capacity = data.Capacity[resourceTypeMapped] or DEFAULT_CAPACITY[resourceTypeMapped] or 9999
+    local newTotal = math.clamp(current + amountToAdd, 0, capacity)
+
+    data.Resources[resourceTypeMapped] = newTotal
+
+    if newTotal == capacity then
+        print("[Capacity]", player.Name, resourceTypeMapped, "storage full (", capacity, ")")
+    end
     
     print(
         "Gave", amountToAdd, resourceType, "to", player.Name,

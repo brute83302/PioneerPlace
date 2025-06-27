@@ -40,7 +40,7 @@ function UIManagerV2.initialize()
     print("Received initial player data from server.")
 
     -- Create the UI components
-    local resourceDisplay, buildHouseButton, buildPlotButton, buildBenchButton, buildBedButton, buildCampfireButton, buildCoopButton, eatFoodButton, invToggleButton, collectionsButton, gotoMarketButton = ResourceUI.create()
+    local resourceDisplay, buildHouseButton, buildPlotButton, buildBenchButton, buildBedButton, buildCampfireButton, buildCoopButton, buildWoodSiloButton, buildStoneShedButton, buildFoodCellarButton, eatFoodButton, invToggleButton, deleteToggleButton, collectionsButton, gotoMarketButton = ResourceUI.create()
     ResourceUI.createLevelBar(playerData)
 
     -- Create Quest UI
@@ -176,6 +176,18 @@ function UIManagerV2.initialize()
 
     buildCoopButton.MouseButton1Click:Connect(function()
         PlacementController:enterPlacementMode("CHICKEN_COOP", playerData)
+    end)
+
+    buildWoodSiloButton.MouseButton1Click:Connect(function()
+        PlacementController:enterPlacementMode("WOOD_SILO", playerData)
+    end)
+
+    buildStoneShedButton.MouseButton1Click:Connect(function()
+        PlacementController:enterPlacementMode("STONE_SHED", playerData)
+    end)
+
+    buildFoodCellarButton.MouseButton1Click:Connect(function()
+        PlacementController:enterPlacementMode("FOOD_CELLAR", playerData)
     end)
 
     eatFoodButton.MouseButton1Click:Connect(function()

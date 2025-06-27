@@ -22,6 +22,9 @@ local BUILDING_GENERATORS = {
     CAMPFIRE_BUILD = BuildingTemplate.createCampfire,
     BED = BuildingTemplate.createBed,
     CHICKEN_COOP = BuildingTemplate.createChickenCoop,
+    WOOD_SILO = BuildingTemplate.createWoodSilo,
+    STONE_SHED = BuildingTemplate.createStoneShed,
+    FOOD_CELLAR = BuildingTemplate.createFoodCellar,
 }
 
 local PlacementController = {}

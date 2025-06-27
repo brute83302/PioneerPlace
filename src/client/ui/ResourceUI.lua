@@ -209,6 +209,39 @@ function ResourceUI.create()
     buildCoopButton.LayoutOrder = 10
     buildCoopButton.Parent = actionsMenu
 
+    -- Build Wood Silo button
+    local buildWoodSiloButton = Instance.new("TextButton")
+    buildWoodSiloButton.Name = "BuildWoodSiloButton"
+    buildWoodSiloButton.Text = "Build Wood Silo (30W,10S)"
+    buildWoodSiloButton.Size = UDim2.new(1,-10,0,25)
+    buildWoodSiloButton.BackgroundColor3 = Color3.fromRGB(101,67,33)
+    buildWoodSiloButton.TextColor3 = Color3.fromRGB(255,255,255)
+    buildWoodSiloButton.Font = Enum.Font.SourceSansBold
+    buildWoodSiloButton.LayoutOrder = 11
+    buildWoodSiloButton.Parent = actionsMenu
+
+    -- Build Stone Shed button
+    local buildStoneShedButton = Instance.new("TextButton")
+    buildStoneShedButton.Name = "BuildStoneShedButton"
+    buildStoneShedButton.Text = "Build Stone Shed (20W,25S)"
+    buildStoneShedButton.Size = UDim2.new(1,-10,0,25)
+    buildStoneShedButton.BackgroundColor3 = Color3.fromRGB(120,120,120)
+    buildStoneShedButton.TextColor3 = Color3.fromRGB(255,255,255)
+    buildStoneShedButton.Font = Enum.Font.SourceSansBold
+    buildStoneShedButton.LayoutOrder = 12
+    buildStoneShedButton.Parent = actionsMenu
+
+    -- Build Food Cellar button
+    local buildFoodCellarButton = Instance.new("TextButton")
+    buildFoodCellarButton.Name = "BuildFoodCellarButton"
+    buildFoodCellarButton.Text = "Build Food Cellar (25W,15S)"
+    buildFoodCellarButton.Size = UDim2.new(1,-10,0,25)
+    buildFoodCellarButton.BackgroundColor3 = Color3.fromRGB(90,60,60)
+    buildFoodCellarButton.TextColor3 = Color3.fromRGB(255,255,255)
+    buildFoodCellarButton.Font = Enum.Font.SourceSansBold
+    buildFoodCellarButton.LayoutOrder = 13
+    buildFoodCellarButton.Parent = actionsMenu
+
     -- Create Inventory toggle button
     local invToggleButton = Instance.new("TextButton")
     invToggleButton.Name = "InvToggleButton"
@@ -217,7 +250,7 @@ function ResourceUI.create()
     invToggleButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
     invToggleButton.TextColor3 = Color3.fromRGB(255,255,255)
     invToggleButton.Font = Enum.Font.SourceSansBold
-    invToggleButton.LayoutOrder = 11
+    invToggleButton.LayoutOrder = 14
     invToggleButton.Parent = actionsMenu
 
     -- Delete mode toggle button
@@ -228,7 +261,7 @@ function ResourceUI.create()
     deleteToggleButton.BackgroundColor3 = Color3.fromRGB(128,0,0)
     deleteToggleButton.TextColor3 = Color3.fromRGB(255,255,255)
     deleteToggleButton.Font = Enum.Font.SourceSansBold
-    deleteToggleButton.LayoutOrder = 12
+    deleteToggleButton.LayoutOrder = 15
     deleteToggleButton.Parent = actionsMenu
 
     local DeleteMode = require(script.Parent.Parent.DeleteMode)
@@ -293,7 +326,7 @@ function ResourceUI.create()
     collectionsButton.BackgroundColor3 = Color3.fromRGB(70,70,120)
     collectionsButton.TextColor3 = Color3.fromRGB(255,255,255)
     collectionsButton.Font = Enum.Font.SourceSansBold
-    collectionsButton.LayoutOrder = 13
+    collectionsButton.LayoutOrder = 16
     collectionsButton.Parent = actionsMenu
 
     -- Go To Market button
@@ -304,7 +337,7 @@ function ResourceUI.create()
     gotoButton.BackgroundColor3 = Color3.fromRGB(90,70,40)
     gotoButton.TextColor3 = Color3.fromRGB(255,255,255)
     gotoButton.Font = Enum.Font.SourceSansBold
-    gotoButton.LayoutOrder = 14
+    gotoButton.LayoutOrder = 17
     gotoButton.Parent = actionsMenu
 
     -- Remote call
@@ -315,7 +348,7 @@ function ResourceUI.create()
     end)
 
     print("ResourceUI created.")
-    return self, buildHouseButton, buildPlotButton, buildBenchButton, buildBedButton, buildCampfireButton, buildCoopButton, eatFoodButton, invToggleButton, collectionsButton, gotoButton
+    return self, buildHouseButton, buildPlotButton, buildBenchButton, buildBedButton, buildCampfireButton, buildCoopButton, buildWoodSiloButton, buildStoneShedButton, buildFoodCellarButton, eatFoodButton, invToggleButton, deleteToggleButton, collectionsButton, gotoButton
 end
 
 function ResourceUI:updateResource(resourceType, amount)

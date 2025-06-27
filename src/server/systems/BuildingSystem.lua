@@ -23,7 +23,10 @@ local BUILDING_COSTS = {
     MARKET_STALL = { WOOD = 20, STONE = 10 },
     CAMPFIRE_BUILD = { WOOD = 5, STONE = 5 },
     BED = { WOOD = 15, STONE = 5 },
-    CHICKEN_COOP = { WOOD = 20, STONE = 10 }
+    CHICKEN_COOP = { WOOD = 20, STONE = 10 },
+    WOOD_SILO = { WOOD = 30, STONE = 10 },
+    STONE_SHED = { WOOD = 20, STONE = 25 },
+    FOOD_CELLAR = { WOOD = 25, STONE = 15 },
 }
 
 -- Map building types to their creation functions
@@ -34,7 +37,10 @@ local BUILDING_GENERATORS = {
     MARKET_STALL = BuildingTemplate.createMarketStall,
     CAMPFIRE_BUILD = BuildingTemplate.createCampfire,
     BED = BuildingTemplate.createBed,
-    CHICKEN_COOP = BuildingTemplate.createChickenCoop
+    CHICKEN_COOP = BuildingTemplate.createChickenCoop,
+    WOOD_SILO = BuildingTemplate.createWoodSilo,
+    STONE_SHED = BuildingTemplate.createStoneShed,
+    FOOD_CELLAR = BuildingTemplate.createFoodCellar
 }
 
 local PLOT_HALF = WorldConstants.PLOT_HALF
@@ -114,6 +120,13 @@ function BuildingSystem.onBuildRequest(player, buildingType)
             -- No special registration yet
         elseif buildingType == "CHICKEN_COOP" then
             GameSystems.AnimalSystem.registerCoop(newBuilding)
+            GameSystems.ResourceManager.increaseCapacity(player, "FOOD", 200)
+        elseif buildingType == "WOOD_SILO" then
+            GameSystems.ResourceManager.increaseCapacity(player, "WOOD", 200)
+        elseif buildingType == "STONE_SHED" then
+            GameSystems.ResourceManager.increaseCapacity(player, "STONE", 200)
+        elseif buildingType == "FOOD_CELLAR" then
+            GameSystems.ResourceManager.increaseCapacity(player, "FOOD", 200)
         end
 
         print("Successfully created", buildingType, "for", player.Name)
@@ -171,6 +184,12 @@ function BuildingSystem.loadBuilding(player, buildingData)
         GameSystems.FarmingSystem.registerPlot(building)
     elseif buildingData.Type == "CHICKEN_COOP" then
         GameSystems.AnimalSystem.registerCoop(building)
+    elseif buildingData.Type == "WOOD_SILO" then
+        GameSystems.ResourceManager.increaseCapacity(player, "WOOD", 200)
+    elseif buildingData.Type == "STONE_SHED" then
+        GameSystems.ResourceManager.increaseCapacity(player, "STONE", 200)
+    elseif buildingData.Type == "FOOD_CELLAR" then
+        GameSystems.ResourceManager.increaseCapacity(player, "FOOD", 200)
     end
 end
 
@@ -203,6 +222,12 @@ function BuildingSystem.deleteStructure(player, model)
         -- FarmingSystem's update loop will clean up nil parents, nothing needed
     elseif objType == "MARKET_STALL" then
         -- SellingSystem may keep a reference; simple unregister later if you add list
+    elseif objType == "WOOD_SILO" then
+        GameSystems.ResourceManager.increaseCapacity(player, "WOOD", -200)
+    elseif objType == "STONE_SHED" then
+        GameSystems.ResourceManager.increaseCapacity(player, "STONE", -200)
+    elseif objType == "FOOD_CELLAR" then
+        GameSystems.ResourceManager.increaseCapacity(player, "FOOD", -200)
     end
 
     -- Optionally save immediately to avoid rollbacks on crash
@@ -257,6 +282,13 @@ function BuildingSystem.onBuildConfirm(player, buildingType, placementCFrame)
         GameSystems.FarmingSystem.registerPlot(newBuilding)
     elseif buildingType == "CHICKEN_COOP" then
         GameSystems.AnimalSystem.registerCoop(newBuilding)
+        GameSystems.ResourceManager.increaseCapacity(player, "FOOD", 200)
+    elseif buildingType == "WOOD_SILO" then
+        GameSystems.ResourceManager.increaseCapacity(player, "WOOD", 200)
+    elseif buildingType == "STONE_SHED" then
+        GameSystems.ResourceManager.increaseCapacity(player, "STONE", 200)
+    elseif buildingType == "FOOD_CELLAR" then
+        GameSystems.ResourceManager.increaseCapacity(player, "FOOD", 200)
     end
 
     GameSystems.ProgressionSystem.addXP(player, (buildingType == "TestHouse") and 50 or 10)

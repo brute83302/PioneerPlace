@@ -395,4 +395,51 @@ function BuildingTemplate.createChickenCoop()
     return model
 end
 
+function BuildingTemplate.createWoodSilo()
+    local model = Instance.new("Model")
+    model.Name = "WoodSilo"
+
+    local base = Instance.new("Part")
+    base.Size = Vector3.new(4,6,4)
+    base.Anchored = true
+    base.Material = Enum.Material.WoodPlanks
+    base.Color = Color3.fromRGB(101,67,33)
+    base.Name = "Base"
+    base.Parent = model
+    model.PrimaryPart = base
+
+    model:SetAttribute("ObjectType", "WOOD_SILO")
+    return model
+end
+
+function BuildingTemplate.createStoneShed()
+    local model = Instance.new("Model")
+    model.Name = "StoneShed"
+    local base = Instance.new("Part")
+    base.Size = Vector3.new(4,4,4)
+    base.Anchored = true
+    base.Material = Enum.Material.Slate
+    base.Color = Color3.fromRGB(120,120,120)
+    base.Name = "Base"
+    base.Parent = model
+    model.PrimaryPart = base
+    model:SetAttribute("ObjectType", "STONE_SHED")
+    return model
+end
+
+function BuildingTemplate.createFoodCellar()
+    local model = Instance.new("Model")
+    model.Name = "FoodCellar"
+    local base = Instance.new("Part")
+    base.Size = Vector3.new(4,3,4)
+    base.Anchored = true
+    base.Material = Enum.Material.Brick
+    base.Color = Color3.fromRGB(90,60,60)
+    base.Name = "Base"
+    base.Parent = model
+    model.PrimaryPart = base
+    model:SetAttribute("ObjectType", "FOOD_CELLAR")
+    return model
+end
+
 return BuildingTemplate 
