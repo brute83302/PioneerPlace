@@ -246,6 +246,14 @@ function RemoteManager.initialize(gameSystems) -- Renamed from setup
         rewardExplosionEvent.Parent = remotesFolder
     end
 
+    -- Hit spark event (single-hit feedback)
+    local hitSparkEvent = remotesFolder:FindFirstChild("HitSpark")
+    if not hitSparkEvent then
+        hitSparkEvent = Instance.new("RemoteEvent")
+        hitSparkEvent.Name = "HitSpark"
+        hitSparkEvent.Parent = remotesFolder
+    end
+
     -- Collection found event
     local collectionFoundEvent = remotesFolder:FindFirstChild("CollectionFound")
     if not collectionFoundEvent then

@@ -46,6 +46,10 @@ end
 local RewardEffects = require(script.Parent:WaitForChild("RewardEffects"))
 RewardEffects.init()
 
+-- Hit effects
+local HitEffects = require(script.Parent:WaitForChild("HitEffects"))
+HitEffects.init()
+
 -- This function runs every time the player's character spawns
 local function onCharacterAdded(character)
     print(player.Name .. "'s character loaded.")

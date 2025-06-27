@@ -101,6 +101,20 @@ function EnergySystem.tryHarvest(player, resourceModel)
 
     -- Add the resource to the respawn queue, which also handles destroying it
     GameSystems.RespawnSystem.addToQueue(resourceModel)
+
+    -- Fire hit spark to client
+    local remotes = ReplicatedStorage:WaitForChild("Remotes")
+    local hitEvent = remotes:FindFirstChild("HitSpark")
+    if hitEvent then
+        local pos
+        if resourceModel.PrimaryPart then
+            pos = resourceModel.PrimaryPart.Position
+        else
+            local bp = resourceModel:FindFirstChildWhichIsA("BasePart")
+            pos = bp and bp.Position or player.Character and player.Character.PrimaryPart.Position or Vector3.new()
+        end
+        hitEvent:FireClient(player, pos, resourceType)
+    end
 end
 
 function EnergySystem.consumeEnergy(player, amount)
