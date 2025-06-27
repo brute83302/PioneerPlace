@@ -4,23 +4,17 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptS" .. "ervice")
+local ServerScriptService = game:GetService("ServerScriptService")
 local ResourceTemplate = require(ReplicatedStorage.Assets.templates.ResourceTemplate)
+local ResourceConfig = require(ReplicatedStorage.Shared.ResourceConfig)
 
 local ResourceManager = {}
 local GameSystems -- Store the GameSystems table
 
--- The amount of resources to give for each type
-local HARVEST_AMOUNTS = {
+-- Fallback yields when not defined in config (legacy support)
+local LEGACY_BASE_YIELD = {
     WOOD = 10,
-    STONE = 5
-}
-
--- The amount of XP to give for each resource type
-local XP_AMOUNTS = {
-    WOOD = 5,
     STONE = 5,
-    DEFAULT = 3
 }
 
 function ResourceManager.initialize(gameSystems)
@@ -40,7 +34,7 @@ function ResourceManager.addResource(player, resourceType, amount)
         resourceTypeMapped = "FOOD"
     end
 
-    local baseAmount = amount or HARVEST_AMOUNTS[resourceTypeMapped] or 1
+    local baseAmount = amount or ResourceConfig.getBaseYield(resourceTypeMapped) or LEGACY_BASE_YIELD[resourceTypeMapped] or 1
     local bonusMultiplier = GameSystems.ToolSystem and GameSystems.ToolSystem.getBonus(player, resourceType) or 1
     local amountToAdd = baseAmount * bonusMultiplier
     
@@ -50,8 +44,6 @@ function ResourceManager.addResource(player, resourceType, amount)
         "Gave", amountToAdd, resourceType, "to", player.Name,
         ". They now have:", data.Resources[resourceTypeMapped]
     )
-
-    -- The EnergySystem will now handle granting XP directly.
 
     -- Update relevant quests
     if resourceTypeMapped == "WOOD" then
@@ -98,7 +90,7 @@ function ResourceManager.removeResources(player, cost)
 end
 
 function ResourceManager.getXPForResource(resourceType)
-    return XP_AMOUNTS[resourceType] or XP_AMOUNTS.DEFAULT
+    return ResourceConfig.getBaseXP(resourceType)
 end
 
 function ResourceManager.createResourceNode(resourceType, position)

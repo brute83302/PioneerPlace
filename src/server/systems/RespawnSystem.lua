@@ -7,7 +7,8 @@ local RespawnSystem = {}
 local respawnQueue = {} -- Stores { resourceType, position, respawnTime }
 local ResourceManager
 
-local RESPAWN_DELAY = 60 -- Time in seconds before a resource respawns
+local DEFAULT_RESPAWN = 60
+local ResourceConfig = require(game:GetService("ReplicatedStorage").Shared.ResourceConfig)
 
 function RespawnSystem.initialize(gameSystems)
     ResourceManager = gameSystems.ResourceManager
@@ -24,14 +25,15 @@ function RespawnSystem.addToQueue(resourceModel)
         return
     end
 
+    local delay = ResourceConfig.getRespawnTime(resourceType)
     local respawnEntry = {
         resourceType = resourceType,
         position = position,
-        respawnTime = tick() + RESPAWN_DELAY
+        respawnTime = tick() + (delay or DEFAULT_RESPAWN)
     }
 
     table.insert(respawnQueue, respawnEntry)
-    print("Added", resourceType, "to respawn queue. Will respawn in", RESPAWN_DELAY, "seconds.")
+    print("Added", resourceType, "to respawn queue. Will respawn in", delay or DEFAULT_RESPAWN, "seconds.")
 
     -- Destroy the original model from the world
     resourceModel:Destroy()
