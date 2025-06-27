@@ -22,6 +22,8 @@ local TOOL_DAMAGE = {
 local RemotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local ToolEquippedEvent = RemotesFolder:WaitForChild("ToolEquipped")
 
+local ResourceConfig = require(ReplicatedStorage.Shared.ResourceConfig)
+
 function ToolSystem.initialize(gs)
     GameSystems = gs
     print("ToolSystem initialized.")
@@ -64,6 +66,10 @@ function ToolSystem.getDamage(player, resourceType)
     local data = GameSystems.PlayerService.getPlayerData(player)
     local toolId = data and data.EquippedTool
     if toolId then
+        -- If tool matches resource category, return full HP to one-shot
+        if (toolId == "STONE_AXE" and resourceType == "WOOD") or (toolId == "PICKAXE" and resourceType == "STONE") then
+            return ResourceConfig.getBaseHP(resourceType)
+        end
         local dmgTable = TOOL_DAMAGE[toolId]
         if dmgTable and dmgTable[resourceType] then
             return dmgTable[resourceType]
