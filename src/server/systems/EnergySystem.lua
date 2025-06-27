@@ -43,7 +43,11 @@ function EnergySystem.tryHarvest(player, resourceModel)
 
     -- Multi-hit obstacle handling ---------------------------------------
     local baseHP = ResourceConfig and ResourceConfig.getBaseHP(resourceType) or 1
-    local currentHP = resourceModel:GetAttribute("HP") or baseHP
+    local currentHP = resourceModel:GetAttribute("HP")
+    if not currentHP then
+        currentHP = baseHP
+        resourceModel:SetAttribute("HP", currentHP)
+    end
     local damage = GameSystems.ToolSystem and GameSystems.ToolSystem.getDamage(player, resourceType) or 1
 
     currentHP -= damage
