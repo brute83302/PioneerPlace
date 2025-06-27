@@ -63,6 +63,30 @@ function InteractionController.setup()
                 UIManagerV2.showMerchantMenu()
             elseif objectType == "BED" then
                 remotesFolder.RequestSleep:FireServer(model)
+            elseif objectType == "WOOD_SILO" or objectType == "STONE_SHED" or objectType == "FOOD_CELLAR" then
+                -- Show a quick capacity popup
+                local getDataFunc = remotesFolder:WaitForChild("GetPlayerData")
+                local success, data = pcall(function()
+                    return getDataFunc:InvokeServer()
+                end)
+                if success and data and data.Capacity then
+                    local resType = (objectType=="WOOD_SILO") and "WOOD" or (objectType=="STONE_SHED" and "STONE" or "FOOD")
+                    local current = data.Resources and data.Resources[resType] or 0
+                    local capacity = data.Capacity[resType] or 0
+                    local gui = Instance.new("TextLabel")
+                    gui.Size = UDim2.new(0,200,0,40)
+                    gui.Position = UDim2.new(0.5,-100,0.2,0)
+                    gui.AnchorPoint = Vector2.new(0.5,0)
+                    gui.BackgroundColor3 = Color3.fromRGB(0,0,0)
+                    gui.BackgroundTransparency = 0.4
+                    gui.TextColor3 = Color3.new(1,1,1)
+                    gui.Font = Enum.Font.GothamBold
+                    gui.TextScaled = true
+                    gui.Text = resType..": "..current.."/"..capacity
+                    gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+                    game:GetService("Debris"):AddItem(gui,2)
+                end
+                return
             else
                 -- For all other interactable objects, just notify the server
                 requestActionEvent:FireServer(model)
