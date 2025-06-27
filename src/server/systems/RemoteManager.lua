@@ -293,6 +293,14 @@ function RemoteManager.initialize(gameSystems) -- Renamed from setup
         confirmBuildEvent.Parent = remotesFolder
     end
 
+    -- Node HP update event
+    local hpUpdate = remotesFolder:FindFirstChild("NodeHPUpdate")
+    if not hpUpdate then
+        hpUpdate = Instance.new("RemoteEvent")
+        hpUpdate.Name = "NodeHPUpdate"
+        hpUpdate.Parent = remotesFolder
+    end
+
     getPlayerDataEvent.OnServerInvoke = function(player)
         print("Received request for initial data from", player.Name)
         -- Use the stored GameSystems reference

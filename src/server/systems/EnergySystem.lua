@@ -52,10 +52,15 @@ function EnergySystem.tryHarvest(player, resourceModel)
 
     currentHP -= damage
 
+    -- Notify client of HP update BEFORE potential early return
+    local hpEvent = remotes:FindFirstChild("NodeHPUpdate")
+    if hpEvent then
+        hpEvent:FireClient(player, resourceModel, math.max(currentHP,0), baseHP)
+    end
+
     if currentHP > 0 then
         -- Still alive; store new HP and exit (no reward yet)
         resourceModel:SetAttribute("HP", currentHP)
-        -- Optional: small hit feedback could be added here later
         return
     end
 
