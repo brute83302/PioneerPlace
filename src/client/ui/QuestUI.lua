@@ -47,8 +47,24 @@ function QuestUI.new(initialQuests)
     layout.Padding = UDim.new(0, 2)
     layout.Parent = container
 
+    -- Current quest display at top center
+    local currentLabel = Instance.new("TextLabel")
+    currentLabel.Name = "CurrentQuestLabel"
+    currentLabel.Size = UDim2.new(0, 320, 0, 32)
+    currentLabel.Position = UDim2.new(0.5, -160, 0, 10)
+    currentLabel.AnchorPoint = Vector2.new(0.5,0)
+    currentLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
+    currentLabel.BackgroundTransparency = 0.35
+    currentLabel.TextColor3 = Color3.fromRGB(255,255,255)
+    currentLabel.Font = Enum.Font.GothamBold
+    currentLabel.TextScaled = true
+    currentLabel.Visible = false
+    currentLabel.Parent = gui
+
     self.container = container
     self.entries = {}
+    self.currentLabel = currentLabel
+    self.selectedQuestId = nil
 
     -- Populate existing quests
     for questId, data in pairs(initialQuests or {}) do
@@ -90,6 +106,29 @@ function QuestUI:addQuest(questId, questData)
     progressLabel.Font = Enum.Font.GothamBold
     progressLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     progressLabel.Parent = row
+
+    -- Click to set as current quest
+    row.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if self.selectedQuestId == questId then
+                -- Deselect
+                self.selectedQuestId = nil
+                self.currentLabel.Visible = false
+                row.BackgroundTransparency = 1
+            else
+                -- Select new quest
+                -- clear highlight previous
+                if self.selectedQuestId and self.entries[self.selectedQuestId] then
+                    self.entries[self.selectedQuestId].row.BackgroundTransparency = 1
+                end
+                self.selectedQuestId = questId
+                row.BackgroundTransparency = 0.2
+                local done, req = computeTotals(questId, questData.Progress or {})
+                self.currentLabel.Text = cfg.Name .. "  (".. done .. "/" .. req .. ")"
+                self.currentLabel.Visible = true
+            end
+        end
+    end)
 
     self.entries[questId] = {
         row = row,
