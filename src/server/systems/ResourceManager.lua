@@ -103,6 +103,10 @@ function ResourceManager.createResourceNode(resourceType, position)
     resourceNode:SetPrimaryPartCFrame(CFrame.new(position))
     resourceNode.Parent = workspace
 
+    -- Initialise hit points attribute for multi-hit obstacles
+    local baseHP = ResourceConfig.getBaseHP(resourceType)
+    resourceNode:SetAttribute("HP", baseHP)
+
     print("RESPAWN_DEBUG: Successfully created new resource node:", resourceType, "at", position)
     return resourceNode
 end

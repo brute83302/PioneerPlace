@@ -13,6 +13,12 @@ local TOOL_BONUS = {
     PICKAXE = { STONE = 2 }
 }
 
+-- Damage per hit when using a tool; defaults to 1 when not listed
+local TOOL_DAMAGE = {
+    STONE_AXE = { WOOD = 2 },
+    PICKAXE = { STONE = 2 },
+}
+
 local RemotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 local ToolEquippedEvent = RemotesFolder:WaitForChild("ToolEquipped")
 
@@ -52,6 +58,18 @@ function ToolSystem.getBonus(player, resourceType)
         return bonusTable[resourceType]
     end
     return 1
+end
+
+function ToolSystem.getDamage(player, resourceType)
+    local data = GameSystems.PlayerService.getPlayerData(player)
+    local toolId = data and data.EquippedTool
+    if toolId then
+        local dmgTable = TOOL_DAMAGE[toolId]
+        if dmgTable and dmgTable[resourceType] then
+            return dmgTable[resourceType]
+        end
+    end
+    return 1 -- default damage
 end
 
 return ToolSystem 

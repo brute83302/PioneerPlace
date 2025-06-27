@@ -14,6 +14,7 @@ local EnergySystem = {}
 local boostState = {}
 
 local WorldConstants = require(ReplicatedStorage.Shared.WorldConstants)
+local ResourceConfig = require(ReplicatedStorage.Shared.ResourceConfig)
 
 local lastSleepTimes = {}
 local SLEEP_COOLDOWN = 60 * 10 -- 10 minutes real time
@@ -23,17 +24,34 @@ function EnergySystem.initialize(gameSystems)
 end
 
 function EnergySystem.tryHarvest(player, resourceModel)
+    -- Determine energy cost per hit from config
+    local resourceType = resourceModel:GetAttribute("ResourceType")
+    local energyCost = ResourceConfig and ResourceConfig.getEnergyCost and ResourceConfig.getEnergyCost(resourceType) or 1
+
     -- First, check if the player has enough energy
-    local hasEnergy = EnergySystem.consumeEnergy(player, 1) -- Cost to harvest is 1
+    local hasEnergy = EnergySystem.consumeEnergy(player, energyCost)
     if not hasEnergy then
         print(player.Name, "is out of energy. Harvest cancelled.")
         return
     end
 
-    -- Get the resource type from the model's attribute
-    local resourceType = resourceModel:GetAttribute("ResourceType")
+    -- resourceType already retrieved
     if not resourceType then
         warn("Harvested object is missing a 'ResourceType' attribute:", resourceModel.Name)
+        return
+    end
+
+    -- Multi-hit obstacle handling ---------------------------------------
+    local baseHP = ResourceConfig and ResourceConfig.getBaseHP(resourceType) or 1
+    local currentHP = resourceModel:GetAttribute("HP") or baseHP
+    local damage = GameSystems.ToolSystem and GameSystems.ToolSystem.getDamage(player, resourceType) or 1
+
+    currentHP -= damage
+
+    if currentHP > 0 then
+        -- Still alive; store new HP and exit (no reward yet)
+        resourceModel:SetAttribute("HP", currentHP)
+        -- Optional: small hit feedback could be added here later
         return
     end
 
@@ -77,8 +95,8 @@ function EnergySystem.tryHarvest(player, resourceModel)
         rewardEvent:FireClient(player, pos, resourceType, 1)
     end
 
-    -- Give the player XP for harvesting
-    local xpGained = GameSystems.ResourceManager.getXPForResource(resourceType)
+    -- Give the player XP for harvesting (use config)
+    local xpGained = ResourceConfig and ResourceConfig.getBaseXP(resourceType) or 3
     GameSystems.ProgressionSystem.addXP(player, xpGained)
 
     -- Add the resource to the respawn queue, which also handles destroying it

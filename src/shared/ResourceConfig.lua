@@ -6,6 +6,8 @@ local ResourceConfig = {
         BaseYield = 10,
         BaseXP = 5,
         RespawnTime = 90, -- seconds
+        BaseHP = 3,
+        EnergyPerHit = 1,
     },
     STONE = {
         Category = "BASIC",
@@ -13,6 +15,8 @@ local ResourceConfig = {
         BaseYield = 5,
         BaseXP = 5,
         RespawnTime = 120,
+        BaseHP = 4,
+        EnergyPerHit = 1,
     },
     FOOD = {
         Category = "CONSUMABLE",
@@ -73,6 +77,16 @@ end
 function ResourceConfig.getBaseYield(id)
     local cfg = ResourceConfig[id]
     return cfg and cfg.BaseYield or 1
+end
+
+function ResourceConfig.getBaseHP(id)
+    local cfg = ResourceConfig[id]
+    return cfg and cfg.BaseHP or 1
+end
+
+function ResourceConfig.getEnergyCost(id)
+    local cfg = ResourceConfig[id]
+    return cfg and cfg.EnergyPerHit or 1
 end
 
 return ResourceConfig 
